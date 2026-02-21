@@ -147,6 +147,8 @@ EOF
 
 echo "✅ LumoFlow created!"
 cd backend && npm install && node server.js
+cd lumoflow/backend && npm install 2>&1 | tail -20
+
 
 
 
