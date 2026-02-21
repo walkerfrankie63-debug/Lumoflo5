@@ -1,0 +1,56 @@
+name: CI Smoke Tests
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  smoke:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+
+      - name: Install backend deps
+        working-directory: lumoflow/backend
+        run: npm ci
+
+      - name: Start backend
+        run: |
+          node lumoflow/backend/server.js &
+          echo $! > backend.pid
+
+      - name: Install frontend deps
+        working-directory: lumoflow/frontend
+        run: npm ci
+
+      - name: Serve frontend
+        run: |
+          npx serve -s lumoflow/frontend -l 8080 &
+          echo $! > frontend.pid
+
+      - name: Wait for services
+        run: |
+          for i in {1..15}; do
+            if curl -sS http://localhost:3000/ >/dev/null && curl -sS http://localhost:8080/ >/dev/null; then
+              echo "services up"; break
+            fi
+            echo "waiting..."; sleep 2
+          done
+
+      - name: Run smoke tests
+        run: |
+          curl -sS http://localhost:3000/ | jq .
+          curl -sS -X POST http://localhost:3000/api/payment-split -H 'Content-Type: application/json' -d '{"amount":100,"supplierCost":70}' | jq .
+
+      - name: Cleanup
+        run: |
+          if [ -f backend.pid ]; then kill $(cat backend.pid) || true; fi
+          if [ -f frontend.pid ]; then kill $(cat frontend.pid) || true; fi
