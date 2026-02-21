@@ -1,6 +1,0 @@
-[build]
-  publish = "lumoflow/frontend"
-  command = ""
-
-[context.production.environment]
-  NODE_VERSION = "18"
