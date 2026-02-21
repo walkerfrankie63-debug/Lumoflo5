@@ -1,0 +1,10 @@
+{
+  "name": "lumoflow-frontend",
+  "version": "1.0.0",
+  "scripts": {
+    "start": "npx serve -s . -l 8080"
+  },
+  "dependencies": {
+    "serve": "^13.0.4"
+  }
+}

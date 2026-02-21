@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>LumoFlow - Robin Hood Dropshipping</title>
+  <style>
+    body { 
+      font-family: system-ui, sans-serif;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      text-align: center;
+      padding: 2rem;
+      min-height: 100vh;
+      margin: 0;
+    }
+    h1 { font-size: 3rem; margin-bottom: 1rem; }
+    .tagline { font-size: 1.3rem; opacity: 0.9; margin-bottom: 2rem; }
+    .card { 
+      background: rgba(255,255,255,0.1);
+      backdrop-filter: blur(10px);
+      padding: 2rem;
+      border-radius: 20px;
+      max-width: 500px;
+      margin: 0 auto;
+    }
+    .price { font-size: 4rem; font-weight: bold; margin: 1rem 0; }
+    button {
+      background: white;
+      color: #667eea;
+      border: none;
+      padding: 1rem 2rem;
+      font-size: 1.2rem;
+      border-radius: 50px;
+      cursor: pointer;
+      font-weight: bold;
+    }
+    .features {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1rem;
+      margin-top: 2rem;
+      max-width: 600px;
+      margin-left: auto;
+      margin-right: auto;
+    }
+    .feature {
+      background: rgba(255,255,255,0.1);
+      padding: 1rem;
+      border-radius: 10px;
+    }
+  </style>
+</head>
+<body>
+  <h1>🚀 LumoFlow</h1>
+  <p class="tagline">The first Robin Hood dropshipping platform.<br>Start free. Pay less. Succeed together.</p>
+  
+  <div class="card">
+    <div class="price">$0</div>
+    <p>Start with 0.5% fees (vs 2.9% industry standard)</p>
+    <button onclick="testPayment()">Start Free Now</button>
+    <div id="result" style="margin-top: 1rem;"></div>
+  </div>
+  
+  <div class="features">
+    <div class="feature">🤖 6 AI Agents</div>
+    <div class="feature">⚡ Instant Split Pay</div>
+    <div class="feature">🌱 Community Funded</div>
+    <div class="feature">💰 0.5% Fees</div>
+  </div>
+
+  <script>
+    function testPayment() {
+      fetch('http://localhost:3000/api/payment-split', {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify({amount: 100, supplierCost: 70})
+      })
+      .then(r => r.json())
+      .then(data => {
+        document.getElementById('result').innerHTML = 
+          `<strong>Demo:</strong> $${data.customerPays} order = 
+           $${data.supplierGets} to vendor + 
+           <span style="color:#4ade80">$${data.netProfit} profit to you</span>
+           <br><small>(Only ${(data.platformFee/data.yourProfit*100).toFixed(1)}% platform fee!)</small>`;
+      });
+    }
+  </script>
+</body>
+</html>
